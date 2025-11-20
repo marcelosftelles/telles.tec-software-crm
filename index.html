@@ -1,184 +1,219 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gestão de OS — Telles</title>
   <link rel="icon" type="image/png" href="assets/favicon.png" />
   <link rel="apple-touch-icon" href="assets/app-icon-512.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
-  <header class="header">
-    <div class="wrap header-row">
-      <img src="assets/logo.png" alt="Logo Telles" class="logo"/>
-      <h1></h1>
-      <div class="right row">
-        <label class="btn ghost" for="logoFile" style="cursor:pointer">Logo<input id="logoFile" type="file" accept="image/*" class="hide"></label>
-        <button class="btn ghost" id="btnExport">Exportar CSV</button>
-        <label class="btn ghost" for="importCsv" style="cursor:pointer">
-          Importar CSV
-          <input id="importCsv" type="file" accept=".csv" class="hide">
-        </label>
-        <button class="btn ok" id="btnNew">Nova OS</button>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container">
+          <img src="assets/logo.png" alt="Logo" class="sidebar-logo logo" />
+        </div>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-view="form">
+          <span class="icon">📝</span> Nova OS
+        </button>
+        <button class="nav-item" data-view="list">
+          <span class="icon">📋</span> Ordens de Serviço
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn ghost theme-toggle" id="themeToggle" title="Alternar Tema">
+          <span class="icon">🌙</span> Modo Escuro
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Header Mobile / Actions -->
+      <header class="top-header">
+        <h2 id="pageTitle">Nova Ordem de Serviço</h2>
+        <div class="header-actions">
+          <label class="btn ghost small" for="logoFile">Importar Logo<input id="logoFile" type="file" accept="image/*"
+              class="hide"></label>
+          <button class="btn ghost small" id="btnExport">Exportar CSV</button>
+          <label class="btn ghost small" for="importCsv">Importar CSV<input id="importCsv" type="file" accept=".csv"
+              class="hide"></label>
+        </div>
+      </header>
+
+      <!-- View: Form (Nova OS / Edição) -->
+      <div id="view-form" class="view active">
+        <section class="card form-card">
+          <div class="grid cols-3">
+            <div>
+              <label>N° OS</label>
+              <div class="row">
+                <input id="osNumber" placeholder="ex.: OS2101" />
+                <button class="btn" id="btnGenOS" title="Gerar OS randômica">Gerar</button>
+              </div>
+            </div>
+            <div>
+              <label>Data de Entrada</label>
+              <input id="entryDate" type="date" />
+            </div>
+            <div>
+              <label>Data de Saída</label>
+              <input id="exitDate" type="date" />
+            </div>
+            <div>
+              <label>Cliente</label>
+              <input id="customer" placeholder="Nome do cliente" />
+            </div>
+            <div>
+              <label>Contato</label>
+              <input id="contact" placeholder="(xx) x xxxx-xxxx" />
+            </div>
+            <div>
+              <label>Produto / Máquina</label>
+              <input id="product" placeholder="Notebook Lenovo, Teclado, etc." />
+            </div>
+            <div class="full-width">
+              <label>Defeito Relatado</label>
+              <textarea id="defect" placeholder="Descrição do problema"></textarea>
+            </div>
+            <div class="full-width">
+              <label>Diagnóstico Técnico</label>
+              <textarea id="diagnosis" placeholder="Análise técnica do problema"></textarea>
+            </div>
+            <div class="full-width">
+              <label>Serviço Realizado</label>
+              <textarea id="service" placeholder="O que foi feito"></textarea>
+            </div>
+            <div>
+              <label>Valor do Reparo (R$)</label>
+              <input id="value" type="text" inputmode="decimal" placeholder="235,00" />
+            </div>
+            <div>
+              <label>Status</label>
+              <select id="status">
+                <option>Em análise</option>
+                <option>Concluído</option>
+                <option>Em andamento</option>
+                <option>Aguardando peças</option>
+                <option>Cancelado</option>
+              </select>
+            </div>
+            <div>
+              <label>Dias em Serviço</label>
+              <input id="days" disabled />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn ok" id="btnSave">Salvar OS</button>
+            <button class="btn warn" id="btnClear">Limpar</button>
+            <div class="divider-v"></div>
+            <button class="btn" id="btnPrint">Imprimir</button>
+            <button class="btn" id="btnSavePDF">Salvar PDF</button>
+            <div class="divider-v"></div>
+            <button class="btn bad" id="btnDelete">Excluir</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- View: List (Histórico) -->
+      <div id="view-list" class="view">
+        <section class="card list-card">
+          <div class="filters-bar">
+            <div class="filter-row">
+              <div class="filter-group flex-1">
+                <input id="search" placeholder="🔍 Buscar OS, cliente, defeito..." />
+              </div>
+              <div class="filter-group">
+                <select id="filterStatus">
+                  <option value="">Todos os Status</option>
+                  <option>Em análise</option>
+                  <option>Concluído</option>
+                  <option>Em andamento</option>
+                  <option>Aguardando peças</option>
+                  <option>Cancelado</option>
+                </select>
+              </div>
+            </div>
+            <div class="filter-row">
+              <div class="filter-group">
+                <input id="filterStart" type="date" placeholder="Data inicial" />
+              </div>
+              <div class="filter-group">
+                <input id="filterEnd" type="date" placeholder="Data final" />
+              </div>
+              <button class="btn ghost" id="btnResetFilters">Limpar Filtros</button>
+            </div>
+          </div>
+
+          <div class="os-list-header">
+            <span>OS</span>
+            <span>Cliente</span>
+            <span>Produto</span>
+            <span>Status</span>
+            <span>Data</span>
+            <span>Valor</span>
+          </div>
+          <div id="osListContainer" class="os-list-container">
+            <!-- Items will be injected here -->
+          </div>
+          <div class="list-footer">
+            <span id="count" class="muted">0 registros</span>
+          </div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ÁREA DE IMPRESSÃO (oculta) -->
+  <section id="printArea" class="print-area hide-print-area">
+    <div class="print-head">
+      <img src="assets/print-logo.png" alt="" class="print-logo">
+      <div>
+        <h2 class="print-title">Ordem de Serviço</h2>
+        <div id="print-os-id" class="print-sub"></div>
       </div>
     </div>
-  </header>
+    <div id="printContent" class="print-content"></div>
+  </section>
 
-  <main class="wrap grid" style="gap:16px">
-
-    <!-- ÁREA DE IMPRESSÃO (oculta até imprimir) -->
-    <section id="printArea" class="card print-card hide-print-area">
-      <div class="print-head">
-        <img src="assets/print-logo.png" alt="" class="print-logo">
-        <div>
-          <h2 class="print-title">Ordem de Serviço</h2>
-          <div id="print-os-id" class="print-sub"></div>
-        </div>
+  <!-- Modal de Ajuste de Logo -->
+  <div id="logoModal" class="modal hide">
+    <div class="modal-content logo-modal-content">
+      <h3>Ajustar Logo</h3>
+      <p class="modal-subtitle">Ajuste o zoom da logo para melhor visualização</p>
+      <div class="logo-preview-container">
+        <img id="logoPreview" src="" alt="Preview" />
       </div>
-      <div id="printContent" class="print-content"></div>
-      
-    </section>
-
-    <section class="card">
-      <h2 class="card-title">Cadastro / Edição</h2>
-      <div class="grid cols-3">
-        <div>
-          <label>N° OS</label>
-          <div class="row">
-            <input id="osNumber" placeholder="ex.: OS2101" />
-            <button class="btn" id="btnGenOS" title="Gerar OS randômica">Gerar</button>
-          </div>
-        </div>
-        <div>
-          <label>Data de Entrada</label>
-          <input id="entryDate" type="date" />
-        </div>
-        <div>
-          <label>Data de Saída</label>
-          <input id="exitDate" type="date" />
-        </div>
-        <div>
-          <label>Cliente</label>
-          <input id="customer" placeholder="Nome do cliente" />
-        </div>
-        <div>
-          <label>Contato</label>
-          <input id="contact" placeholder="(xx) x xxxx-xxxx" />
-        </div>
-        <div>
-          <label>Produto / Máquina</label>
-          <input id="product" placeholder="Notebook Lenovo, Teclado, etc." />
-        </div>
-        <div>
-          <label>Defeito Relatado</label>
-          <textarea id="defect" placeholder="Descrição do problema"></textarea>
-        </div>
-        <div>
-          <label>Serviço Realizado</label>
-          <textarea id="service" placeholder="O que foi feito"></textarea>
-        </div>
-        <div>
-          <label>Valor do Reparo (R$)</label>
-          <input id="value" type="text" inputmode="decimal" placeholder="235,00" />
-        </div>
-        <div>
-          <label>Status</label>
-          <select id="status">
-            <option>Em análise</option>
-            <option>Concluído</option>
-            <option>Em andamento</option>
-            <option>Aguardando peças</option>
-            <option>Cancelado</option>
-          </select>
-        </div>
-        <div>
-          <label>Dias em Serviço</label>
-          <input id="days" disabled />
-        </div>
+      <div class="zoom-control">
+        <label for="logoZoom">
+          <span class="control-label">Zoom</span>
+          <span class="control-value" id="logoZoomVal">1.0x</span>
+        </label>
+        <input type="range" id="logoZoom" min="0.5" max="3" value="1" step="0.1">
       </div>
-      <div class="sticky-actions">
-        <button class="btn ok" id="btnSave">Salvar</button>
-        <button class="btn warn" id="btnClear">Limpar</button>
-        <button class="btn" id="btnPrint">Imprimir OS (PDF)</button>
-        <button class="btn bad right" id="btnDelete">Excluir</button>
+      <div class="modal-actions">
+        <button class="btn ghost" id="btnCancelLogo">Cancelar</button>
+        <button class="btn ok" id="btnConfirmLogo">✓ Salvar Logo</button>
       </div>
-    </section>
-
-    <section class="card">
-      <h2 class="card-title">Filtro e Busca</h2>
-      <div class="grid cols-3">
-        <div>
-          <label>Filtrar por Data de Entrada (início)</label>
-          <input id="filterStart" type="date" />
-        </div>
-        <div>
-          <label>Filtrar por Data de Entrada (fim)</label>
-          <input id="filterEnd" type="date" />
-        </div>
-        <div>
-          <label>Status</label>
-          <select id="filterStatus">
-            <option value="">Todos</option>
-            <option>Em análise</option>
-            <option>Concluído</option>
-            <option>Em andamento</option>
-            <option>Aguardando peças</option>
-            <option>Cancelado</option>
-          </select>
-        </div>
-        <div>
-          <label>Ordenar</label>
-          <select id="sortOrder">
-            <option value="recent">Mais recentes</option>
-            <option value="old">Mais antigos</option>
-          </select>
-        </div>
-        <div class="grid cols-2" style="grid-column:1/-1">
-          <div>
-            <label>Busca (cliente, produto, defeito, serviço)</label>
-            <input id="search" placeholder="Digite para filtrar..." />
-          </div>
-          <div class="row" style="align-items:flex-end;gap:8px">
-            <button class="btn ghost" id="btnResetFilters">Limpar filtros</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <h2 class="card-title">Ordens de Serviço</h2>
-        <div class="muted" id="count"></div>
-      </div>
-      <div class="table-wrap">
-        <table id="table">
-          <thead>
-            <tr>
-              <th style="min-width:92px">N° OS</th>
-              <th>Entrada</th>
-              <th>Saída</th>
-              <th>Cliente</th>
-              <th>Contato</th>
-              <th>Produto</th>
-              <th>Defeito Relatado</th>
-              <th>Serviço Realizado</th>
-              <th>Valor</th>
-              <th>Status</th>
-              <th>Dias</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <p class="muted" style="margin-top:8px">Clique em uma linha para editar.</p>
-    </section>
-
-  </main>
+    </div>
+  </div>
 
   <script src="js/utils.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/print.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
